@@ -1,6 +1,5 @@
 package Playable;
 import Enemy.Martian;
-
 import static java.lang.System.out;
 
 public class ShadowReaper extends Base {
@@ -33,23 +32,23 @@ public class ShadowReaper extends Base {
         out.println();
         out.println(" 1. Dark Pact");
         out.println("    Fuses his hands with shadow power and then strike dealing");
-        out.println("    50 (+120% PA) physical damage.");
+        out.println("    80 (+130% PA) physical damage.");
         out.println("    Can critically strike to deal 1.5x damage.");
         out.println();
-        out.println("    Cooldown: 2 Turns");
+        out.println("    Cooldown: 3 Turns");
         out.println();
         out.println(" 2. Evade and Nullify");
-        out.println("    Covering himself from dark mist, taking 50% less damage from");
+        out.println("    Covering himself from dark mist, taking 25% less damage from");
         out.println("    next attack, while nullifying enemy's defenses,  making them");
         out.println("    receive 35% more damage on next attack.");
         out.println();
         out.println("    Cooldown: 3 Turns");
         out.println();
         out.println(" 3. Silent Slaughter");
-        out.println("    Sneakily attacks his target dealing 60 (135% PA + 115%");
+        out.println("    Sneakily attacks his target dealing 60 (135% PA + 150%");
         out.println("    physical PEN) physical damage.");
         out.println();
-        out.println("    Cooldown: 2 Turns");
+        out.println("    Cooldown: 3 Turns");
         out.println();
         out.println(" 4. Shadow Execute");
         out.println("    Consumes his inner life energy to deal massive amounts of");
@@ -66,92 +65,182 @@ public class ShadowReaper extends Base {
 
     public void abilityList(Martian NPC) {
         out.println(" Select your move:");
-        out.println(" 0. Basic Attack");
-        out.println(" 1. Dark Pact");
-        out.println(" 2. Nullify");
-        out.println(" 3. Silent Slaughter");
-        out.printf(" 4. Shadow Execute | [%d]\n", (int)(NPC.getMaxHealth() * 0.25));
+        out.printf(" 0. Basic Attack | CD: %s\n", this.ability0RemainingCD());
+        out.printf(" 1. Dark Pact | CD: %s\n", this.ability1RemainingCD());
+        out.printf(" 2. Nullify | CD: %s\n", this.ability2RemainingCD());
+        out.printf(" 3. Silent Slaughter | CD: %s\n", this.ability3RemainingCD());
+        out.printf(" 4. Shadow Execute | %%HP Threshold: [%d] | CD: %s\n", (int)(NPC.getMaxHealth() * 0.25), this.ability4RemainingCD());
     }
 
-    public void useAbility(int choice, Base Player, Martian NPC) {
+    public String ability0RemainingCD() {
+        if(this.abilityCD0 == -1) return "Ready";
+        else return this.abilityCD0 + 1 + " turns";
+    }
+    public String ability1RemainingCD() {
+        if(this.abilityCD1 == -1) return "Ready";
+        else return this.abilityCD1 + 1 + " turns";
+    }
+    public String ability2RemainingCD() {
+        if(this.abilityCD2 == -1) return "Ready";
+        else return this.abilityCD2 + 1 + " turns";
+    }
+    public String ability3RemainingCD() {
+        if(this.abilityCD3 == -1) return "Ready";
+        else return this.abilityCD3 + 1 + " turns";
+    }
+    public String ability4RemainingCD() {
+        if(this.abilityCD4 == -1) return "Ready";
+        else return this.abilityCD4 + 1 + " turns";
+    }
+
+    public boolean useAbility(int choice, Base Player, Martian NPC) {
+        boolean endTurn;
         switch (choice) {
-            case 0 -> this.basicAttack(Player, NPC);
-            case 1 -> this.ability1(Player, NPC);
-            case 2 -> this.ability2(Player, NPC);
-            case 3 -> this.ability3(Player, NPC);
-            case 4 -> this.ability4(Player, NPC);
-            default -> out.println("Invalid choice!");
+            case 0 -> {
+                endTurn = this.basicAttack(Player, NPC);
+                return endTurn;
+            }
+            case 1 -> {
+                endTurn = this.ability1(Player, NPC);
+                return endTurn;
+            }
+            case 2 -> {
+                endTurn = this.ability2(Player, NPC);
+                return endTurn;
+            }
+            case 3 -> {
+                endTurn = this.ability3(Player, NPC);
+                return endTurn;
+            }
+            case 4 -> {
+                endTurn = this.ability4(Player, NPC);
+                return endTurn;
+            }
+            default -> {
+                out.println("Invalid choice!");
+                return false;
+            }
         }
     }
 
-    public void basicAttack(Base ShadowReaper, Martian NPC) {
+    public boolean basicAttack(Base ShadowReaper, Martian NPC) {
         // (100% AD) physical damage, 200% crit damage
-        int chance = random.nextInt(0, 101);
-        String abilityName = "Stab";
-        int damage = getPhysicalAttack();
-        if(chance < this.getCritChance()) { damage *= 2; }
-        damage = checkIncreasedDamage(damage);
-        damage -= ((NPC.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
-        damage = checkEnemyReduction(damage, NPC);
-        NPC.addHealth(-damage);
-
-        if(chance < this.getCritChance()) out.println(" CRITICAL!!!");
-        out.printf(" Shadow Reaper used %s dealing %d damage!%n", abilityName, damage);
-        out.print(" Press Enter key to continue.");
-        prompt.readPassword();
-    }
-    public void ability1(Base ShadowReaper, Martian NPC) {
-        // 50 (+150% AD) physical damage, 180% crit damage
-        int chance = random.nextInt(0, 101);
-        String abilityName = "Dark Pact";
-        int damage = 50 + (int)(this.getPhysicalAttack() * 1.2);
-        if(chance < this.getCritChance()) { damage *= 1.5; }
-        damage = checkIncreasedDamage(damage);
-        damage -= ((NPC.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
-        damage = checkEnemyReduction(damage, NPC);
-        NPC.addHealth(-damage);
-
-        if(chance < this.getCritChance()) out.println(" CRITICAL!!!");
-        out.printf(" Shadow Reaper used %s dealing %d damage!%n", abilityName, damage);
-        out.print(" Press Enter key to continue.");
-        prompt.readPassword();
-    }
-    public void ability2(Base ShadowReaper, Martian NPC) {
-        // +35% increased damage, receive 50% less damage
-        String abilityName = "Evade and Nullify";
-        this.addIncreasedDamage(0.35);
-        this.addDecreaseIncomingDamage(0.5);
-        out.printf(" Shadow Reaper used %s increasing his next damage\n and receiving less damage for next attack.%n", abilityName);
-        out.print(" Press Enter key to continue.");
-        prompt.readPassword();
-    }
-    public void ability3(Base ShadowReaper, Martian NPC) {
-        // 60 (135% AD + 115% physical PEN) physical damage
-        String abilityName = "Silent Slaughter";
-        int damage = 60 + ((int)(this.getPhysicalAttack() * 1.35) + (int)(this.getPhysicalPEN() * 1.15));
-        damage = checkIncreasedDamage(damage);
-        damage -= ((NPC.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
-        damage = checkEnemyReduction(damage, NPC);
-        NPC.addHealth(-damage);
-
-        out.printf(" Shadow Reaper used %s dealing %d damage!%n", abilityName, damage);
-        out.print(" Press Enter key to continue.");
-        prompt.readPassword();
-    }
-    public void ability4(Base ShadowReaper, Martian NPC) {
-        // 25% max HP execute, else 200 (+85% AD) true damage
-        String abilityName = "Shadow Execute";
-        int damage = 200 + (int)(this.getPhysicalAttack() * 0.85);
-        if(NPC.getHealth() < (NPC.getMaxHealth() * 0.25)) {
-            NPC.addHealth(-NPC.getHealth());
-            out.printf(" Shadow Reaper used %s, successfully dealing the killing blow!%n", abilityName);
-        } else {
+        if(abilityCD0 == -1) {
+            int chance = random.nextInt(0, 101);
+            String abilityName = "Stab";
+            int damage = getPhysicalAttack();
+            if (chance < this.getCritChance()) {
+                damage *= 2;
+            }
+            damage = checkIncreasedDamage(damage);
+            damage -= ((NPC.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
+            damage = checkEnemyReduction(damage, NPC);
             NPC.addHealth(-damage);
-            this.addHealth(-(int)(this.getMaxHealth() * 0.15));
+
+            if (chance < this.getCritChance()) out.println(" CRITICAL!!!");
             out.printf(" Shadow Reaper used %s dealing %d damage!%n", abilityName, damage);
-            out.printf(" He lost %d HP in the process.%n", (int)(this.getMaxHealth() * 0.15));
+            out.print(" Press Enter key to continue.");
+            prompt.readPassword();
+            return true;
+        } else {
+            out.println(" Ability in cooldown!");
+            out.print(" Press Enter key to continue.");
+            prompt.readPassword();
+            return false;
         }
-        out.print(" Press Enter key to continue.");
-        prompt.readPassword();
+    }
+    public boolean ability1(Base ShadowReaper, Martian NPC) {
+        // 80 (+130% AD) physical damage, 150% crit damage
+        if(abilityCD1 == -1) {
+            int chance = random.nextInt(0, 101);
+            String abilityName = "Dark Pact";
+            int damage = 80 + (int) (this.getPhysicalAttack() * 1.3);
+            if (chance < this.getCritChance()) {
+                damage *= 1.5;
+            }
+            damage = checkIncreasedDamage(damage);
+            damage -= ((NPC.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
+            damage = checkEnemyReduction(damage, NPC);
+            NPC.addHealth(-damage);
+            abilityCD1 = 3;
+
+            if (chance < this.getCritChance()) out.println(" CRITICAL!!!");
+            out.printf(" Shadow Reaper used %s dealing %d damage!%n", abilityName, damage);
+            out.print(" Press Enter key to continue.");
+            prompt.readPassword();
+            return true;
+        } else {
+            out.println(" Ability in cooldown!");
+            out.print(" Press Enter key to continue.");
+            prompt.readPassword();
+            return false;
+        }
+    }
+    public boolean ability2(Base ShadowReaper, Martian NPC) {
+        // +35% increased damage, receive 25% less damage
+        if(abilityCD2 == -1) {
+            String abilityName = "Evade and Nullify";
+            this.addIncreasedDamage(0.35);
+            this.addDecreaseIncomingDamage(0.25);
+            abilityCD2 = 3;
+
+            out.printf(" Shadow Reaper used %s increasing his next damage\n and receiving less damage from next attack.%n", abilityName);
+            out.print(" Press Enter key to continue.");
+            prompt.readPassword();
+            return true;
+        } else {
+            out.println(" Ability in cooldown!");
+            out.print(" Press Enter key to continue.");
+            prompt.readPassword();
+            return false;
+        }
+    }
+    public boolean ability3(Base ShadowReaper, Martian NPC) {
+        // 60 (140% AD + 180% physical PEN) physical damage
+        if(abilityCD3 == -1) {
+            String abilityName = "Silent Slaughter";
+            int damage = 60 + ((int) (this.getPhysicalAttack() * 1.40) + (int) (this.getPhysicalPEN() * 1.80));
+            damage = checkIncreasedDamage(damage);
+            damage -= ((NPC.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
+            damage = checkEnemyReduction(damage, NPC);
+            NPC.addHealth(-damage);
+            abilityCD3 = 3;
+
+            out.printf(" Shadow Reaper used %s dealing %d damage!%n", abilityName, damage);
+            out.print(" Press Enter key to continue.");
+            prompt.readPassword();
+            return true;
+        } else {
+            out.println(" Ability in cooldown!");
+            out.print(" Press Enter key to continue.");
+            prompt.readPassword();
+            return false;
+        }
+    }
+    public boolean ability4(Base ShadowReaper, Martian NPC) {
+        // 25% max HP execute, else 200 (+85% AD) true damage
+        if(abilityCD4 == -1) {
+            String abilityName = "Shadow Execute";
+            int damage = 200 + (int) (this.getPhysicalAttack() * 0.85);
+            if (NPC.getHealth() < (NPC.getMaxHealth() * 0.25)) {
+                NPC.addHealth(-NPC.getHealth());
+                out.printf(" Shadow Reaper used %s, successfully dealing the killing blow!%n", abilityName);
+            } else {
+                NPC.addHealth(-damage);
+                this.addHealth(-(int) (this.getMaxHealth() * 0.15));
+                out.printf(" Shadow Reaper used %s dealing %d damage!%n", abilityName, damage);
+                out.printf(" He lost %d HP in the process.%n", (int) (this.getMaxHealth() * 0.15));
+            }
+            abilityCD4 = 4;
+
+            out.print(" Press Enter key to continue.");
+            prompt.readPassword();
+            return true;
+        } else {
+            out.println(" Ability in cooldown!");
+            out.print(" Press Enter key to continue.");
+            prompt.readPassword();
+            return false;
+        }
     }
 }

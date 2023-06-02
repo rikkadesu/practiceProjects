@@ -42,6 +42,12 @@ public class Base {
     private double magicAttackMultiplier;
     private double physicalAttackMultiplier;
 
+    public int abilityCD0 = -1;
+    public int abilityCD1 = -1;
+    public int abilityCD2 = -1;
+    public int abilityCD3 = -1;
+    public int abilityCD4 = -1;
+
     public Base() {
         physicalAttack = 0;
         magicAttack = 0;
@@ -95,20 +101,34 @@ public class Base {
     public double getMagicAttackMultiplier() { return magicAttackMultiplier; }
     public double getPhysicalAttackMultiplier() { return physicalAttackMultiplier; }
 
+    public void updateCooldowns() {
+        if(abilityCD0 > -1) abilityCD0--;
+        if(abilityCD1 > -1) abilityCD1--;
+        if(abilityCD2 > -1) abilityCD2--;
+        if(abilityCD3 > -1) abilityCD3--;
+        if(abilityCD4 > -1) abilityCD4--;
+    }
+
     public void charDesc() {
     }
     public void abilityList(Martian NPC){
     }
-    public void useAbility(int choice, Base Player, Martian NPC) {
+    public boolean useAbility(int choice, Base Player, Martian NPC) {
+        return true;
     }
-    public void basicAttack(Base Player, Martian NPC) {
+    public boolean basicAttack(Base Player, Martian NPC) {
+        return true;
     }
-    public void ability1(Base Player, Martian NPC) {
+    public boolean ability1(Base Player, Martian NPC) {
+        return true;
     }
-    public void ability2(Base Player, Martian NPC) {
+    public boolean ability2(Base Player, Martian NPC) {
+        return true;
     }
-    public void ability3(Base Player, Martian NPC) {
+    public boolean ability3(Base Player, Martian NPC) {
+        return true;
     }
-    public void ability4(Base Player, Martian NPC) {
+    public boolean ability4(Base Player, Martian NPC) {
+        return true;
     }
 }
