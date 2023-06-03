@@ -60,7 +60,6 @@ public class ShadowReaper extends Base {
         out.println("===============================================================");
         out.println(" Select this guardian?");
         out.println(" 1 - Yes, 0 - No");
-        out.print(" Enter selection: ");
     }
 
     public void abilityList(Martian NPC) {

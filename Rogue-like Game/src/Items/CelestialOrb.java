@@ -24,6 +24,5 @@ public class CelestialOrb extends ItemBase {
         out.println("===============================================================");
         out.println(" Do you like to equip this item?");
         out.println(" 1 - Yes, 0 - No");
-        out.print(" Enter selection: ");
     }
 }

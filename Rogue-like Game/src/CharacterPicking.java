@@ -30,12 +30,10 @@ class AvailablePlayable {
 
         int i = 1;
         for(Base name : charList) {                // Loops through all available characters
-            System.out.printf(" %d. %s%n", i, name.getName());
+            out.printf(" %d. %s%n", i, name.getName());
             i++;
         }
-        System.out.print(" Enter selection: ");
-        int selected = scan.nextInt();             // Stores currently selected character temporarily
-        scan.nextLine();                           // Clears newline buffered
+        int selected = CustomMethods.tryCatchInt(scan, "Enter selection: ");  // Stores currently selected character temporarily
         boolean lockedIn = showCharDesc(selected); // Calls showCharDesc and receive a boolean value (Line 47)
         if(lockedIn) {
             return selected;                       // Depending on the boolean received by lockedIn,
@@ -45,10 +43,16 @@ class AvailablePlayable {
     }
 
     public static boolean showCharDesc(int selected) {
-        CustomMethods.clear_screen();
-        Base currentPick = charList.get(selected-1); // Takes the object specified by the selected character of user
-        currentPick.charDesc();                      // Takes their description
-        int lockIn = scan.nextInt();                 // User will input 1 or 0 depending on their choice
-        return lockIn == 1;                          // Returns true if they agree, otherwise false
+        try {
+            Base currentPick = charList.get(selected - 1); // Takes the object specified by the selected character of user
+            CustomMethods.clear_screen();
+            currentPick.charDesc();                      // Takes their description
+            int lockIn = CustomMethods.tryCatchInt(scan, "Enter selection: ");// User will input 1 or 0 depending on their choice
+            return lockIn == 1;                          // Returns true if they agree, otherwise false
+        } catch (Exception e) {
+            out.print(" Invalid input. Press Enter key to continue.");
+            console().readPassword();
+            return false;
+        }
     }
 }

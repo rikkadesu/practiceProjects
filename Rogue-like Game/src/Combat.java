@@ -39,14 +39,13 @@ public class Combat {
             out.println("===============================================================");
             Player.abilityList(NPC);
             while(!endTurn1) {
-                out.print(" Enter selection: ");
-                attack = scan.nextInt();
+                attack = CustomMethods.tryCatchInt(scan, "Enter selection: ");
                 endTurn1 = Player.useAbility(attack, Player, NPC); // Player Attack
                 }
-            while(!endTurn2) {
-                if(NPC.getHealth() > 0) { // Checks if enemy still has health left, if none left, enemy will not attack anymore
+            if(NPC.getHealth() > 0) { // Checks if enemy still has health left, if none left, enemy will not attack anymore
+                while(!endTurn2) {
                     endTurn2 = NPC.useAbility(Player, NPC); // Enemy AI Attack
-                    }
+                }
             }
             Player.updateCooldowns();
             NPC.updateCooldowns();

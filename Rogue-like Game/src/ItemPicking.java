@@ -2,6 +2,8 @@ import Items.*;
 import Misc.CustomMethods;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import static java.lang.System.console;
 import static java.lang.System.out;
 
 public class ItemPicking {
@@ -42,19 +44,23 @@ class ShowItems {
             out.printf(" %d. %s\n", i, name.getName());
             i++;
         }
-        out.print(" Enter selection: ");
-        int selected = scan.nextInt();
-        scan.nextLine(); // Clear input buffer
+        int selected = CustomMethods.tryCatchInt(scan, "Enter selection: ");
         boolean equipped = showItemDesc(selected);
         if(equipped) return selected;
         return 0; // Default return value
     }
 
     public static boolean showItemDesc(int selected) {
-        CustomMethods.clear_screen();
-        ItemBase currentPick = itemList.get(selected-1);
-        currentPick.itemDesc();
-        int equip = scan.nextInt();
-        return equip == 1;
+        try {
+            ItemBase currentPick = itemList.get(selected - 1);
+            CustomMethods.clear_screen();
+            currentPick.itemDesc();
+            int equip = CustomMethods.tryCatchInt(scan, "Enter selection: ");
+            return equip == 1;
+        } catch (Exception e) {
+            out.print(" Invalid input. Press Enter key to continue.");
+            console().readPassword();
+            return false;
+        }
     }
 }

@@ -42,8 +42,7 @@ public class GameInterface {
 
             out.println(" Do you want to play again?");
             out.println(" 1 - Yes, 0 - No");
-            out.print(" Enter selection: ");
-            stillPlay = scan.nextInt() == 1;
+            stillPlay = CustomMethods.tryCatchInt(scan, "Enter selection: ") == 1;
         }
     }
 
@@ -62,7 +61,7 @@ public class GameInterface {
 // Generate enemy attributes - done
 // Code the actual combat - done
 // Try to add the cooldown feature - partially done (implement to enemy) - done
-// Implement exception handling
+// Implement exception handling - done
 // Add more playable characters
 // Add more enemies
 // Add progression (increase character stats, increase difficulty)
