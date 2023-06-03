@@ -3,6 +3,8 @@ import Enemy.Martian;
 import java.io.Console;
 import java.util.Random;
 
+import static java.lang.System.out;
+
 public class Base {
     public int checkIncreasedDamage(int damage) {
         if(this.getIncreasedDamage() > 0) {
@@ -21,6 +23,36 @@ public class Base {
         return damage;
     }
 
+    public int calculateDamage(int damage, Martian NPC, String type) {
+        if(type.equalsIgnoreCase("Physical")) {
+            damage = this.checkIncreasedDamage(damage);
+            damage -= ((NPC.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
+            damage = this.checkEnemyReduction(damage, NPC);
+            return damage;
+        } else if(type.equalsIgnoreCase("Magic")) {
+            damage = this.checkIncreasedDamage(damage);
+            damage -= ((NPC.getMagicArmor() - this.getMagicPEN()) / 2);
+            damage = this.checkEnemyReduction(damage, NPC);
+            return damage;
+        } else if(type.equalsIgnoreCase("True")) {
+            return damage;
+        } else return 0;
+    }
+
+    public void dealDamage(int damage, Martian NPC) {
+        if(damage < 0) { damage = 0; }
+        if(NPC.getShield() > 0) {
+            if(NPC.getShield() > damage) {
+                NPC.addShield(-damage);
+            } else if(NPC.getShield() < damage){
+                damage -= NPC.getShield();
+                NPC.addHealth(-damage);
+            }
+        } else {
+            NPC.addHealth(-damage);
+        }
+    }
+
     static Console prompt = System.console();
     static Random random = new Random();
 
@@ -30,6 +62,7 @@ public class Base {
     private int magicAttack;
     private int maxHealth;
     private int health;
+    private int shield;
     private int physicalArmor;
     private int magicResist;
     private int physicalLifeSteal;
@@ -53,6 +86,7 @@ public class Base {
         magicAttack = 0;
         maxHealth = 0;
         health = 0;
+        shield = 0;
         physicalArmor = 0;
         magicResist = 0;
         physicalLifeSteal = 0;
@@ -71,6 +105,7 @@ public class Base {
     public void addMagicAttack(int AP) { magicAttack += AP; }
     public void setMaxHealth(int HP) { maxHealth += HP; health += HP;}
     public void addHealth(int HP) { health += HP; }
+    public void addShield(int block) { shield += block; }
     public void addPhysicalArmor(int AR) { physicalArmor += AR; }
     public void addMagicArmor(int MR) { magicResist += MR; }
     public void addPhysicalLifeSteal(int physicalHeal) { physicalLifeSteal += physicalHeal; }
@@ -89,6 +124,7 @@ public class Base {
     public int getMagicAttack() { return magicAttack; }
     public int getMaxHealth() { return maxHealth; }
     public int getHealth() { return health; }
+    public int getShield() { return shield; }
     public int getPhysicalArmor() { return physicalArmor; }
     public int getMagicArmor() { return magicResist; }
     public int getPhysicalLifeSteal() { return physicalLifeSteal; }

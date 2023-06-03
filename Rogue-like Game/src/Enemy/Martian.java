@@ -21,6 +21,36 @@ public abstract class Martian {
         return damage;
     }
 
+    public int calculateDamage(int damage, Base Player, String type) {
+        if(type.equalsIgnoreCase("Physical")) {
+            damage = this.checkIncreasedDamage(damage);
+            damage -= ((Player.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
+            damage = this.checkEnemyReduction(damage, Player);
+            return damage;
+        } else if(type.equalsIgnoreCase("Magic")) {
+            damage = this.checkIncreasedDamage(damage);
+            damage -= ((Player.getMagicArmor() - this.getMagicPEN()) / 2);
+            damage = this.checkEnemyReduction(damage, Player);
+            return damage;
+        } else if(type.equalsIgnoreCase("True")) {
+            return damage;
+        } else return 0;
+    }
+
+    public void dealDamage(int damage, Base Player) {
+        if(damage < 0) { damage = 0; }
+        if(Player.getShield() > 0) {
+            if(Player.getShield() > damage) {
+                Player.addShield(-damage);
+            } else if(Player.getShield() < damage){
+                damage -= Player.getShield();
+                Player.addHealth(-damage);
+            }
+        } else {
+            Player.addHealth(-damage);
+        }
+    }
+
     static Console prompt = System.console();
     static Random random = new Random();
 
@@ -30,6 +60,7 @@ public abstract class Martian {
     private int magicAttack;
     private int maxHealth;
     private int health;
+    private int shield;
     private int physicalArmor;
     private int magicResist;
     private int physicalLifeSteal;
@@ -53,6 +84,7 @@ public abstract class Martian {
         magicAttack = 0;
         maxHealth = 0;
         health = 0;
+        shield = 0;
         physicalArmor = 0;
         magicResist = 0;
         physicalLifeSteal = 0;
@@ -71,6 +103,7 @@ public abstract class Martian {
     public void addMagicAttack(int AP) { magicAttack += AP; }
     public void setMaxHealth(int HP) { maxHealth += HP; health += HP; }
     public void addHealth(int HP) { health += HP; }
+    public void addShield(int block) { shield += block; }
     public void addPhysicalArmor(int AR) { physicalArmor += AR; }
     public void addMagicArmor(int MR) { magicResist += MR; }
     public void addPhysicalLifeSteal(int physicalHeal) { physicalLifeSteal += physicalHeal; }
@@ -89,6 +122,7 @@ public abstract class Martian {
     public int getMagicAttack() { return magicAttack; }
     public int getMaxHealth() { return maxHealth; }
     public int getHealth() { return health; }
+    public int getShield() { return shield; }
     public int getPhysicalArmor() { return physicalArmor; }
     public int getMagicArmor() { return magicResist; }
     public int getPhysicalLifeSteal() { return physicalLifeSteal; }

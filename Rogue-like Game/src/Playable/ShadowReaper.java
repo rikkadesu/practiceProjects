@@ -4,25 +4,25 @@ import static java.lang.System.out;
 
 public class ShadowReaper extends Base {
     public ShadowReaper() {
-        this.setName("Shadow Reaper");
-        this.setTags("Burst");
-        this.addPhysicalAttack(65);
-        this.setMaxHealth(600);
-        this.addPhysicalArmor(30);
-        this.addMagicArmor(27);
-    }
+    this.setName("Shadow Reaper");
+    this.setTags("Burst");
+    this.addPhysicalAttack(65);
+    this.setMaxHealth(600);
+    this.addPhysicalArmor(30);
+    this.addMagicArmor(27);
+}
 
     @Override
     public void charDesc() {
         out.println(" Name: Shadow Reaper");
         out.println(" Tags: Burst");
-        out.println("===============================================================");
-        out.println("                       >> STATS <<");
-        out.printf("              Physical Attack: %d\n", this.getPhysicalAttack());
-        out.printf("                       Health: %d | %d\n", this.getHealth(), this.getMaxHealth());
-        out.printf("               Physical Armor: %d\n", this.getPhysicalArmor());
-        out.printf("                 Magic Resist: %d\n", this.getMagicArmor());
-        out.println("===============================================================");
+        out.println("========================================================================");
+        out.println("                               >> STATS <<");
+        out.printf("                      Physical Attack: %d\n", this.getPhysicalAttack());
+        out.printf("                               Health: %d | %d\n", this.getHealth(), this.getMaxHealth());
+        out.printf("                       Physical Armor: %d\n", this.getPhysicalArmor());
+        out.printf("                         Magic Resist: %d\n", this.getMagicArmor());
+        out.println("========================================================================");
         out.println(" Abilities:");
         out.println(" 0. Basic Attack");
         out.println("    Performs basic attack dealing 65 damage.");
@@ -51,24 +51,24 @@ public class ShadowReaper extends Base {
         out.println("    Cooldown: 3 Turns");
         out.println();
         out.println(" 4. Shadow Execute");
-        out.println("    Consumes his inner life energy to deal massive amounts of");
-        out.println("    damage. Consume 15% of max HP. If the enemy is below 25% HP,");
-        out.println("    instantly kill it, else deal 200 (+85% PA) physical damage");
+        out.println("    Consumes his inner life energy to deal massive amounts of damage.");
+        out.println("    Consume 15% of max HP. If the enemy is below 25% HP, instantly kill");
+        out.println("    and restore consumed health, else deal 200 (+85% PA) physical damage");
         out.println("    to it.");
         out.println();
         out.println("    Cooldown: 4 Turns");
-        out.println("===============================================================");
+        out.println("========================================================================");
         out.println(" Select this guardian?");
         out.println(" 1 - Yes, 0 - No");
     }
 
     public void abilityList(Martian NPC) {
         out.println(" Select your move:");
-        out.printf(" 0. Basic Attack | CD: %s\n", this.ability0RemainingCD());
-        out.printf(" 1. Dark Pact | CD: %s\n", this.ability1RemainingCD());
-        out.printf(" 2. Nullify | CD: %s\n", this.ability2RemainingCD());
+        out.printf(" 0. Basic Attack     | CD: %s\n", this.ability0RemainingCD());
+        out.printf(" 1. Dark Pact        | CD: %s\n", this.ability1RemainingCD());
+        out.printf(" 2. Nullify          | CD: %s\n", this.ability2RemainingCD());
         out.printf(" 3. Silent Slaughter | CD: %s\n", this.ability3RemainingCD());
-        out.printf(" 4. Shadow Execute | %%HP Threshold: [%d] | CD: %s\n", (int)(NPC.getMaxHealth() * 0.25), this.ability4RemainingCD());
+        out.printf(" 4. Shadow Execute   | CD: %s |  %%HP Threshold: [%d]\n", this.ability4RemainingCD(), (int)(NPC.getMaxHealth() * 0.25));
     }
 
     public String ability0RemainingCD() {
@@ -127,14 +127,14 @@ public class ShadowReaper extends Base {
         if(abilityCD0 == -1) {
             int chance = random.nextInt(0, 101);
             String abilityName = "Stab";
+            String type = "Physical";
+
             int damage = getPhysicalAttack();
             if (chance < this.getCritChance()) {
                 damage *= 2;
             }
-            damage = checkIncreasedDamage(damage);
-            damage -= ((NPC.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
-            damage = checkEnemyReduction(damage, NPC);
-            NPC.addHealth(-damage);
+            damage = calculateDamage(damage, NPC, type);
+            this.dealDamage(damage, NPC);
 
             if (chance < this.getCritChance()) out.println(" CRITICAL!!!");
             out.printf(" Shadow Reaper used %s dealing %d damage!%n", abilityName, damage);
@@ -153,14 +153,13 @@ public class ShadowReaper extends Base {
         if(abilityCD1 == -1) {
             int chance = random.nextInt(0, 101);
             String abilityName = "Dark Pact";
+            String type = "Physical";
+
             int damage = 80 + (int) (this.getPhysicalAttack() * 1.3);
-            if (chance < this.getCritChance()) {
-                damage *= 1.5;
-            }
-            damage = checkIncreasedDamage(damage);
-            damage -= ((NPC.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
-            damage = checkEnemyReduction(damage, NPC);
-            NPC.addHealth(-damage);
+            if (chance < this.getCritChance()) { damage *= 1.5; }
+
+            damage = this.calculateDamage(damage, NPC, type);
+            this.dealDamage(damage, NPC);
             abilityCD1 = 3;
 
             if (chance < this.getCritChance()) out.println(" CRITICAL!!!");
@@ -179,6 +178,7 @@ public class ShadowReaper extends Base {
         // +35% increased damage, receive 25% less damage
         if(abilityCD2 == -1) {
             String abilityName = "Evade and Nullify";
+
             this.addIncreasedDamage(0.35);
             this.addDecreaseIncomingDamage(0.25);
             abilityCD2 = 3;
@@ -198,11 +198,11 @@ public class ShadowReaper extends Base {
         // 60 (140% AD + 180% physical PEN) physical damage
         if(abilityCD3 == -1) {
             String abilityName = "Silent Slaughter";
+            String type = "Physical";
+
             int damage = 60 + ((int) (this.getPhysicalAttack() * 1.40) + (int) (this.getPhysicalPEN() * 1.80));
-            damage = checkIncreasedDamage(damage);
-            damage -= ((NPC.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
-            damage = checkEnemyReduction(damage, NPC);
-            NPC.addHealth(-damage);
+            damage = this.calculateDamage(damage, NPC, type);
+            this.dealDamage(damage, NPC);
             abilityCD3 = 3;
 
             out.printf(" Shadow Reaper used %s dealing %d damage!%n", abilityName, damage);
@@ -220,12 +220,15 @@ public class ShadowReaper extends Base {
         // 25% max HP execute, else 200 (+85% AD) true damage
         if(abilityCD4 == -1) {
             String abilityName = "Shadow Execute";
-            int damage = 200 + (int) (this.getPhysicalAttack() * 0.85);
+            String type = "Physical";
+
             if (NPC.getHealth() < (NPC.getMaxHealth() * 0.25)) {
                 NPC.addHealth(-NPC.getHealth());
                 out.printf(" Shadow Reaper used %s, successfully dealing the killing blow!%n", abilityName);
             } else {
-                NPC.addHealth(-damage);
+                int damage = 200 + (int) (this.getPhysicalAttack() * 0.85);
+                damage = this.calculateDamage(damage, NPC, type);
+                this.dealDamage(damage, NPC);
                 this.addHealth(-(int) (this.getMaxHealth() * 0.15));
                 out.printf(" Shadow Reaper used %s dealing %d damage!%n", abilityName, damage);
                 out.printf(" He lost %d HP in the process.%n", (int) (this.getMaxHealth() * 0.15));

@@ -62,6 +62,7 @@ public class GameInterface {
 // Code the actual combat - done
 // Try to add the cooldown feature - partially done (implement to enemy) - done
 // Implement exception handling - done
+// Improve quality of life
 // Add more playable characters
 // Add more enemies
 // Add progression (increase character stats, increase difficulty)

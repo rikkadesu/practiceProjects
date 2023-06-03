@@ -1,5 +1,6 @@
 import Misc.CustomMethods;
 import Playable.Base;
+import Playable.BloodHarvester;
 import Playable.ShadowReaper;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -27,6 +28,7 @@ class AvailablePlayable {
         //Adding new character starts here
         charList.clear();
         charList.add(new ShadowReaper());
+        charList.add(new BloodHarvester());
 
         int i = 1;
         for(Base name : charList) {                // Loops through all available characters

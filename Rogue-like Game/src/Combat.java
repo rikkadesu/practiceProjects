@@ -13,7 +13,7 @@ public class Combat {
         out.printf(" Physical PEN: %d | Magic PEN: %s\n", Player.getPhysicalPEN(), Player.getMagicPEN());
         out.printf(" Physical Lifesteal: %d | Magic Lifesteal: %s\n", Player.getPhysicalLifeSteal(), Player.getMagicLifeSteal());
         out.printf(" Crit: %d%% | Damage Amplifier: %.2f\n", Player.getCritChance(), Player.getIncreasedDamage());
-        out.printf(" Damage Reduction: %.2f\n", Player.getDecreaseIncomingDamage());
+        out.printf(" Shield: %d | Damage Reduction: %.2f\n", Player.getShield(), Player.getDecreaseIncomingDamage());
     }
     public static void enemyStats(Martian NPC) {
         out.println(" ENEMY STATS");
@@ -23,7 +23,7 @@ public class Combat {
         out.printf(" Physical PEN: %d | Magic PEN: %s\n", NPC.getPhysicalPEN(), NPC.getMagicPEN());
         out.printf(" Physical Lifesteal: %d | Magic Lifesteal: %s\n", NPC.getPhysicalLifeSteal(), NPC.getMagicLifeSteal());
         out.printf(" Crit: %d%% | Damage Amplifier: %.2f\n", NPC.getCritChance(), NPC.getIncreasedDamage());
-        out.printf(" Damage Reduction: %.2f\n", NPC.getDecreaseIncomingDamage());
+        out.printf(" Shield: %d | Damage Reduction: %.2f\n", NPC.getShield(), NPC.getDecreaseIncomingDamage());
     }
 
     public static boolean combat(Base Player, Martian NPC) {

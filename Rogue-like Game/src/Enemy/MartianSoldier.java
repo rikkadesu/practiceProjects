@@ -51,19 +51,19 @@ public class MartianSoldier extends Martian{
         if(abilityCD0 == -1) {
             int chance = random.nextInt(0, 101);
             String abilityName = "Swing";
+            String type = "Physical";
+
             int damage = getPhysicalAttack();
             if (chance < this.getCritChance()) {
                 damage *= 2;
             }
-            damage = this.checkIncreasedDamage(damage);
-            damage -= ((Player.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
-            damage = this.checkEnemyReduction(damage, Player);
-            Player.addHealth(-damage);
+            damage = this.calculateDamage(damage, Player, type);
+            this.dealDamage(damage, Player);
 
             if (chance < this.getCritChance()) {
                 System.out.println(" CRITICAL!!!");
             }
-            System.out.printf(" Martian Soldier used %s dealing %d damage!%n", abilityName, damage);
+            System.out.printf(" Martian Soldier used %s dealing %d physical damage!%n", abilityName, damage);
             System.out.print(" Press Enter key to continue.");
             prompt.readPassword();
             return true;
@@ -73,14 +73,14 @@ public class MartianSoldier extends Martian{
         // 50 (+75% AD) physical damage
         if(abilityCD1 == -1) {
             String abilityName = "Power Strike";
+            String type = "Physical";
+
             int damage = (50 + (int) (this.getPhysicalAttack() * 0.75));
-            damage = this.checkIncreasedDamage(damage);
-            damage -= ((Player.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
-            damage = this.checkEnemyReduction(damage, Player);
-            Player.addHealth(-damage);
+            damage = calculateDamage(damage, Player, type);
+            this.dealDamage(damage, Player);
             abilityCD1 = 2;
 
-            System.out.printf(" Martian Soldier used %s dealing %d damage!%n", abilityName, damage);
+            System.out.printf(" Martian Soldier used %s dealing %d physical damage!%n", abilityName, damage);
             System.out.print(" Press Enter key to continue.");
             prompt.readPassword();
             return true;
@@ -90,14 +90,14 @@ public class MartianSoldier extends Martian{
         // 50 + (100% physical armor + 100% magic resist) physical damage
         if(abilityCD2 == -1) {
             String abilityName = "Shield Bash";
+            String type = "Physical";
+
             int damage = 50 + (this.getPhysicalArmor() + this.getMagicArmor());
-            damage = this.checkIncreasedDamage(damage);
-            damage -= ((Player.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
-            damage = this.checkEnemyReduction(damage, Player);
-            Player.addHealth(-damage);
+            damage = calculateDamage(damage, Player, type);
+            this.dealDamage(damage, Player);
             abilityCD2 = 3;
 
-            System.out.printf(" Martian Soldier used %s dealing %d damage!%n", abilityName, damage);
+            System.out.printf(" Martian Soldier used %s dealing %d physical damage!%n", abilityName, damage);
             System.out.print(" Press Enter key to continue.");
             prompt.readPassword();
             return true;
@@ -107,17 +107,17 @@ public class MartianSoldier extends Martian{
         // (30% lost HP) or (150% AD) physical damage (whichever is higher)
         if(abilityCD3 == -1) {
             String abilityName = "Energy Blast";
+            String type = "Magic";
+
             int damage;
             int damage1 = (int) ((this.getMaxHealth() - this.getHealth()) * 0.15);
             int damage2 = this.getPhysicalAttack();
             damage = Math.max(damage1, damage2);
-            damage = this.checkIncreasedDamage(damage);
-            damage -= ((Player.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
-            damage = this.checkEnemyReduction(damage, Player);
-            Player.addHealth(-damage);
-            abilityCD3 = 4;
+            damage = calculateDamage(damage, Player, type);
+            this.dealDamage(damage, Player);
+            abilityCD3 = 3;
 
-            System.out.printf(" Martian Soldier used %s dealing %d damage!%n", abilityName, damage);
+            System.out.printf(" Martian Soldier used %s dealing %d magic damage!%n", abilityName, damage);
             System.out.print(" Press Enter key to continue.");
             prompt.readPassword();
             return true;
@@ -127,17 +127,19 @@ public class MartianSoldier extends Martian{
         // (150% AD + 10% enemy Max HP) physical damage
         if(abilityCD4 == -1) {
             String abilityName = "Meteor Strike";
+            String type = "Physical";
+
             int damage = (int)(this.getPhysicalAttack() * 1.5) + (int)(Player.getMaxHealth() * 0.10);
             if (this.getHealth() < (this.getMaxHealth() * 0.3)) {
-                Player.addHealth(-damage);
+                damage = this.calculateDamage(damage, Player, "True");
+                this.dealDamage(damage, Player);
                 System.out.printf(" Martian Soldier used %s dealing %d true damage!%n", abilityName, damage);
             } else {
-                damage = this.checkIncreasedDamage(damage);
-                damage -= ((Player.getPhysicalArmor() - this.getPhysicalPEN()) / 2);
-                damage = this.checkEnemyReduction(damage, Player);
-                Player.addHealth(-damage);
+                damage = calculateDamage(damage, Player, type);
+                this.dealDamage(damage, Player);
                 System.out.printf(" Martian Soldier used %s dealing %d physical damage!%n", abilityName, damage);
             }
+            this.abilityCD4 = 4;
             System.out.print(" Press Enter key to continue.");
             prompt.readPassword();
             return true;
